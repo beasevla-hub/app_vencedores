@@ -25,4 +25,4 @@
 - [x] Remover referências a placeholders de Analytics do HTML local para evitar a rota inválida `%VITE_ANALYTICS_ENDPOINT%`.
 - [x] Tornar a inicialização do OAuth silenciosa e opcional no modo de desenvolvimento local com bypass de autenticação.
 - [x] Corrigir a disponibilidade do logotipo para que a geração do PDF funcione na execução local do Windows.
-- [ ] Validar o download de PDF com a configuração local mínima e publicar a correção no GitHub.
+- [x] Validar o download de PDF com a configuração local mínima e publicar a correção no GitHub.
