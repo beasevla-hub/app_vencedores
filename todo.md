@@ -1,0 +1,18 @@
+# Project TODO
+
+- [x] Criar uma experiência de painel autenticado com a identidade visual da THI Engenharia e Arquitetura, usando branco, verde primário `#52A660`, verde escuro `#174C2B` e títulos em caixa alta espaçada.
+- [x] Armazenar e validar com segurança a configuração da integração do Notion, sem expor credenciais no cliente.
+- [x] Ler registros da base `Captação Geral` e normalizar os campos `Sub/Prefeitura`, `DATA E HORA`, `STATUS`, `VALOR DA OBRA`, `Valor aceito`, `N DO EDITAL`, `PROCESSO`, `OBJETO` e empresa vencedora.
+- [x] Carregar dinamicamente a lista única e ordenada de órgãos/subprefeituras a partir da base do Notion.
+- [x] Implementar filtros de órgão/subprefeitura, data inicial e data final, incluindo estados de carregamento, erro e ausência de resultados.
+- [x] Restringir os cálculos aos registros do órgão e período escolhidos cujo status represente os resultados `aceita` ou `perdida` conforme o mapeamento confirmado.
+- [x] Calcular total de empresas únicas, total de licitações, empresa com maior valor aceito consolidado, maior contrato individual, valor publicado, valor contratado e saldo/economia.
+- [x] Agrupar licitações por empresa vencedora em ordem decrescente de valor aceito consolidado e exibir subtotais por empresa.
+- [x] Exibir em cada licitação o número do edital, processo, objeto, valor do edital, valor aceito e desconto percentual calculado.
+- [x] Gerar e baixar um PDF A4 com cabeçalho, órgão, período, cartões de resumo verdes, grupos de empresas, tabela de licitações e rodapé com totais.
+- [x] Posicionar o logotipo THI no topo direito e aplicar sua versão translúcida como marca d’água no PDF sem comprometer legibilidade.
+- [x] Criar testes Vitest para normalização de dados, regras de filtro, cálculos de resumo, agrupamento e desconto percentual.
+- [ ] Verificar visualmente o painel e o PDF em relação aos três modelos de referência enviados.
+- [x] Documentar a configuração local do Notion, os comandos de execução e o fluxo de geração do PDF.
+- [x] Registrar que a validação visual autenticada no ambiente hospedado foi bloqueada pela falha de autenticação do Cloudflare informada pelo usuário.
+- [ ] Enviar a versão documentada do projeto para o repositório GitHub beasevla-hub/app_vencedores solicitado pelo usuário.
