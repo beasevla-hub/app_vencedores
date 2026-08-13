@@ -15,4 +15,4 @@
 - [ ] Verificar visualmente o painel e o PDF em relação aos três modelos de referência enviados.
 - [x] Documentar a configuração local do Notion, os comandos de execução e o fluxo de geração do PDF.
 - [x] Registrar que a validação visual autenticada no ambiente hospedado foi bloqueada pela falha de autenticação do Cloudflare informada pelo usuário.
-- [ ] Enviar a versão documentada do projeto para o repositório GitHub beasevla-hub/app_vencedores solicitado pelo usuário.
+- [x] Enviar a versão documentada do projeto para o repositório GitHub beasevla-hub/app_vencedores solicitado pelo usuário.
