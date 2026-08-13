@@ -79,3 +79,13 @@ O painel web foi verificado com o mesmo recorte de SUB SANTO AMARO. Ele exibe o 
 Para a conferência explícita de composição, o painel foi aberto novamente na instância local, com seletor de órgão, datas e botão de geração apresentados em uma linha própria acima do conteúdo do relatório.
 
 Na captura preenchida de SUB SANTO AMARO, a hierarquia foi confirmada: filtros em linha superior, identificação do relatório e período abaixo, sete cartões compactos em sequência horizontal, título de detalhamento, grupos de empresas delimitados e valores alinhados à direita. Os espaçamentos entre filtros, resumo e tabela são consistentes com a leitura do modelo, preservando a diferença necessária de que o painel é interativo e o PDF é a versão A4 estática.
+
+## Revisão de legibilidade
+
+Uma nova amostra será gerada para SUB ITAQUERA com o período de 01/01/2026 a 13/08/2026, usando a grade tipográfica ampliada e estimativa de altura de linhas compatível com o conteúdo de processo e objeto.
+
+A primeira amostra revisada de SUB ITAQUERA confirmou que os processos, objetos e valores permanecem separados em suas células, sem sobreposição ou corte. Como ajuste final, a escala de cartões e tabelas será elevada de forma moderada para distribuir melhor os seis grupos entre as duas páginas e aproveitar a área livre sem reduzir a legibilidade.
+
+Após o ajuste final de escala, a análise de `SUB ITAQUERA` foi gerada novamente para o período de `01/01/2026` a `13/08/2026`, resultando em 6 empresas e 6 licitações. Os indicadores confirmaram valor publicado de R$ 1.898.670,81, valor contratado de R$ 1.452.011,72 e saldo de R$ 446.659,09.
+
+O arquivo `relatorio-vencedores-sub-itaquera-2026-01-01-2026-08-13 (1).pdf` foi baixado com sucesso. A conferência do arquivo confirmou formato A4 e duas páginas. Na inspeção visual, o cabeçalho, período, sete cartões, títulos de empresa, subtotais e cabeçalhos de tabela estão maiores e usam melhor a área útil. Os seis grupos foram distribuídos em quatro blocos na primeira página e dois na segunda; processo, objeto, valores do edital e valores aceitos permanecem em células distintas, sem corte ou sobreposição. A marca d’água da THI permanece discreta na área livre da segunda página e os rodapés preservam totais e numeração.

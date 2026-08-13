@@ -34,3 +34,7 @@
 - [x] Validar visualmente o painel web atualizado, registrando hierarquia, espaçamentos, cartões e listagem por empresa em relação ao modelo de referência.
 - [x] Reconfirmar visualmente, em captura do painel preenchido, a hierarquia, os espaçamentos, os cartões e a listagem por empresa frente ao modelo de referência.
 - [x] Validar, documentar e publicar no GitHub os ajustes finais de fidelidade visual.
+- [x] Aumentar as fontes do cabeçalho, cartões de resumo, grupos de empresas e tabelas do PDF sem reduzir a legibilidade dos valores longos.
+- [x] Recalibrar larguras de colunas, alturas de linha e quebras de texto para impedir sobreposições entre processo, objeto e valores.
+- [x] Aproveitar melhor a área útil da página A4, equilibrando espaços em branco, quantidade de grupos por página e paginação.
+- [x] Gerar e validar visualmente uma amostra revisada de SUB ITAQUERA, sincronizando a melhoria no GitHub.
