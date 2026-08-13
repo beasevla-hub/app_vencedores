@@ -1,7 +1,14 @@
 import type { Express, Response } from "express";
+import { existsSync } from "fs";
+import { resolve } from "path";
 import { ENV } from "./env";
 
 function sendLocalBrandFallback(res: Response) {
+  const localLogo = resolve(process.cwd(), "logo.png");
+  if (existsSync(localLogo)) {
+    res.sendFile(localLogo);
+    return;
+  }
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 180" role="img" aria-label="THI Engenharia e Arquitetura">
     <rect width="360" height="180" fill="white"/>
     <path d="M16 18h328v24H16zM16 46h36v72h46v-72h194v72h52v24H16z" fill="#52A660" stroke="#174C2B" stroke-width="3"/>

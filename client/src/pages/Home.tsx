@@ -14,7 +14,7 @@ import { AlertCircle, ArrowDownToLine, Building2, CalendarDays, CircleDollarSign
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
-const LOGO_URL = "/manus-storage/thi-engenharia-positivo_4f57432d.png";
+const LOGO_URL = "/manus-storage/thi-engenharia-arquitetura-oficial_8e77bf2b.png";
 
 function formatCurrency(value: number): string {
   return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(value);
@@ -101,7 +101,7 @@ export default function Home() {
               <h1 className="mt-0.5 text-lg font-bold tracking-[-0.03em] text-[#174C2B] sm:text-xl">Painel de Análise de Licitações</h1>
             </div>
           </div>
-          <img src={LOGO_URL} alt="THI Engenharia e Arquitetura" className="h-auto w-18 object-contain sm:w-25" />
+          <img src={LOGO_URL} alt="THI Engenharia e Arquitetura" className="h-auto w-24 object-contain sm:w-32" />
         </div>
       </header>
 
@@ -138,11 +138,11 @@ export default function Home() {
 
         {report && !reportQuery.isLoading ? (
           <>
-            <section className="mt-8 flex flex-col gap-4 border-b border-[#DDE9DE] pb-5 sm:flex-row sm:items-end sm:justify-between">
-              <div><p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#65816A]">Relatório selecionado</p><h2 className="mt-1 text-2xl font-bold tracking-[-0.04em] text-[#174C2B]">{report.filters.orgao}</h2><p className="mt-1 text-sm text-[#718076]">{formattedDate(report.filters.startDate)} até {formattedDate(report.filters.endDate)}</p></div>
+            <section className="mt-8 flex flex-col gap-4 border-b border-[#DDE9DE] pb-4 sm:flex-row sm:items-end sm:justify-between">
+              <div><p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#65816A]">Relatório de vencedores</p><h2 className="mt-1 text-2xl font-bold uppercase tracking-[-0.04em] text-[#174C2B]">{report.filters.orgao}</h2><p className="mt-1 text-sm text-[#718076]">{formattedDate(report.filters.startDate)} até {formattedDate(report.filters.endDate)}</p></div>
               <Button onClick={handleDownload} disabled={report.records.length === 0 || isDownloading} className="h-11 rounded-sm bg-[#52A660] px-5 font-bold text-white hover:bg-[#438B50]">{isDownloading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowDownToLine className="h-4 w-4" />}Baixar PDF</Button>
             </section>
-            <section className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7">
+            <section className="mt-5 grid gap-1.5 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7">
               <SummaryCard icon={Users} label="Empresas" value={String(report.summary.totalEmpresas)} />
               <SummaryCard icon={FileText} label="Licitações" value={String(report.summary.totalLicitacoes)} />
               <SummaryCard icon={Trophy} label="Empresa c/ maior valor aceito" value={report.summary.empresaMaiorValorAceito ?? "—"} supporting={formatCurrency(report.summary.totalMaiorEmpresa)} emphasized />

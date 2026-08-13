@@ -26,3 +26,11 @@
 - [x] Tornar a inicialização do OAuth silenciosa e opcional no modo de desenvolvimento local com bypass de autenticação.
 - [x] Corrigir a disponibilidade do logotipo para que a geração do PDF funcione na execução local do Windows.
 - [x] Validar o download de PDF com a configuração local mínima e publicar a correção no GitHub.
+- [x] Publicar e usar o PNG oficial da THI enviado pelo usuário como logotipo do painel, cabeçalho e marca d’água do PDF.
+- [x] Permitir que a execução local carregue o arquivo oficial `logo.png` na raiz do projeto, usando-o no painel e no PDF sem alterar o pacote publicado.
+- [x] Reproduzir no painel a composição do modelo de referência: título, área de filtros, hierarquia visual, cartões, listagem por empresa e espaçamentos.
+- [x] Reproduzir no PDF A4 o cabeçalho, tipografia, grade dos indicadores, blocos por empresa, tabelas, marca d’água, rodapé e paginação dos modelos enviados.
+- [x] Comparar visualmente uma amostra de SUB SANTO AMARO com o PDF de referência e ajustar divergências de layout.
+- [x] Validar visualmente o painel web atualizado, registrando hierarquia, espaçamentos, cartões e listagem por empresa em relação ao modelo de referência.
+- [x] Reconfirmar visualmente, em captura do painel preenchido, a hierarquia, os espaçamentos, os cartões e a listagem por empresa frente ao modelo de referência.
+- [ ] Validar, documentar e publicar no GitHub os ajustes finais de fidelidade visual.

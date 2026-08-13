@@ -61,3 +61,21 @@ Após remover as variáveis hospedadas de OAuth, Analytics e Storage em uma inst
 Na mesma instância mínima, a análise da SUB PERUS foi gerada normalmente para 01/01/2026 a 08/07/2026, com os mesmos indicadores, grupo e edital já validados anteriormente.
 
 O arquivo `relatorio-vencedores-sub-perus-2026-01-01-2026-07-08 (1).pdf` foi baixado com sucesso nessa instância mínima, confirmando que o fallback local do logotipo viabiliza a exportação sem OAuth, Analytics ou Storage hospedado.
+
+## Revisão de fidelidade visual
+
+A instância local atualizada carregou o PNG oficial da THI por meio de `logo.png`, refletindo a substituição do ativo no cabeçalho do painel e preparando a comparação da exportação com o modelo de SUB SANTO AMARO.
+
+O arquivo `relatorio-vencedores-sub-santo-amaro-2026-01-01-2026-07-08 (2).pdf` foi gerado com sucesso usando o PNG oficial e a nova grade de relatório.
+
+A primeira comparação da amostra reconstruída confirmou o cabeçalho, período, grade de sete indicadores, tabelas agrupadas, rodapé e a marca oficial. Como último ajuste, a tabela será ampliada para a escala do modelo (menos grupos por página e maior legibilidade) e a marca d’água será desenhada acima das células com opacidade mínima, como no original.
+
+Após a atualização de escala e marca d’água, a instância local foi recarregada com o PNG oficial ainda disponível para a amostra final.
+
+A amostra final `relatorio-vencedores-sub-santo-amaro-2026-01-01-2026-07-08 (3).pdf` foi conferida em duas páginas. O cabeçalho usa o PNG oficial, o período aparece em caixa delimitada, os sete indicadores seguem a grade horizontal, as empresas preservam títulos e subtotais, as tabelas mantêm as quatro colunas, a marca d’água aparece discretamente atrás do conteúdo e o rodapé apresenta totais e numeração. A escala foi ajustada para manter blocos legíveis e separar os grupos entre páginas de forma equivalente ao modelo de referência.
+
+O painel web foi verificado com o mesmo recorte de SUB SANTO AMARO. Ele exibe o título de relatório, o órgão e período, a grade compacta de sete indicadores, bordas verdes claras, subtotais alinhados à direita e tabelas em quatro colunas por empresa. Os controles de filtro permanecem acima do relatório para preservar a operação interativa, enquanto a hierarquia do conteúdo acompanha a sequência do modelo em PDF.
+
+Para a conferência explícita de composição, o painel foi aberto novamente na instância local, com seletor de órgão, datas e botão de geração apresentados em uma linha própria acima do conteúdo do relatório.
+
+Na captura preenchida de SUB SANTO AMARO, a hierarquia foi confirmada: filtros em linha superior, identificação do relatório e período abaixo, sete cartões compactos em sequência horizontal, título de detalhamento, grupos de empresas delimitados e valores alinhados à direita. Os espaçamentos entre filtros, resumo e tabela são consistentes com a leitura do modelo, preservando a diferença necessária de que o painel é interativo e o PDF é a versão A4 estática.

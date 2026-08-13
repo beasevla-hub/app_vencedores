@@ -34,6 +34,19 @@ O `LOCAL_DEV_BYPASS_AUTH=true` libera apenas o painel rodando localmente com `NO
 
 Para a execução local, não configure `OAUTH_SERVER_URL`, `VITE_ANALYTICS_ENDPOINT`, `VITE_ANALYTICS_WEBSITE_ID` nem variáveis `BUILT_IN_FORGE_*`. O projeto ignora esses serviços hospedados no modo local e usa um logotipo de fallback para permitir a geração de PDF.
 
+### Logotipo oficial no modo local
+
+Para que o painel e o PDF local usem exatamente o PNG oficial da THI, copie o arquivo enviado como `logo.png` para a raiz do projeto, no mesmo nível de `package.json`:
+
+```text
+app_vencedores/
+├── logo.png
+├── package.json
+└── .env
+```
+
+O arquivo é servido apenas durante o desenvolvimento local e não deve ser versionado. Quando `logo.png` não estiver presente, o projeto usa automaticamente uma versão de fallback para manter a exportação de PDF funcional.
+
 No Notion, crie ou escolha uma integração interna em `notion.so/my-integrations` com permissão de leitura de conteúdo. Depois, abra a base **Captação Geral**, escolha **Compartilhar** e adicione essa integração. O app consulta a fonte de dados `Captação Geral` vinculada à base já configurada no código.
 
 ## Executar e validar
