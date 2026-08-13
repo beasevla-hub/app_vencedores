@@ -19,3 +19,6 @@
 - [x] Documentar a configuração local do Notion, os comandos de execução e o fluxo de geração do PDF.
 - [x] Registrar que a validação visual autenticada no ambiente hospedado foi bloqueada pela falha de autenticação do Cloudflare informada pelo usuário.
 - [x] Enviar a versão documentada do projeto para o repositório GitHub beasevla-hub/app_vencedores solicitado pelo usuário.
+- [x] Corrigir o script `pnpm dev` para execução nativa no Windows, sem depender da sintaxe `NODE_ENV=development` do Linux/macOS.
+- [x] Atualizar o README com instruções de execução no PowerShell do Windows.
+- [ ] Publicar a correção de compatibilidade no repositório GitHub beasevla-hub/app_vencedores.

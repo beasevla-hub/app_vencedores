@@ -42,6 +42,18 @@ pnpm dev
 
 Abra a URL mostrada no terminal, selecione um órgão e um intervalo de período e clique em **Gerar análise**. Para gerar o arquivo, clique em **Baixar PDF** depois que o detalhamento for carregado.
 
+### Windows / PowerShell
+
+O script `pnpm dev` é multiplataforma e deve ser executado exatamente da mesma forma no PowerShell: `pnpm dev`. Ele configura `NODE_ENV=development` internamente, portanto não é necessário incluir `NODE_ENV=...` no comando nem definir essa variável manualmente no Windows.
+
+Se você clonou o projeto antes desta correção, atualize a cópia local e reinstale as dependências antes de iniciar:
+
+```powershell
+git pull origin main
+pnpm install
+pnpm dev
+```
+
 Os comandos abaixo validam tipos, integração e compilação de produção:
 
 ```bash
