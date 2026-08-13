@@ -33,4 +33,4 @@
 - [x] Comparar visualmente uma amostra de SUB SANTO AMARO com o PDF de referência e ajustar divergências de layout.
 - [x] Validar visualmente o painel web atualizado, registrando hierarquia, espaçamentos, cartões e listagem por empresa em relação ao modelo de referência.
 - [x] Reconfirmar visualmente, em captura do painel preenchido, a hierarquia, os espaçamentos, os cartões e a listagem por empresa frente ao modelo de referência.
-- [ ] Validar, documentar e publicar no GitHub os ajustes finais de fidelidade visual.
+- [x] Validar, documentar e publicar no GitHub os ajustes finais de fidelidade visual.
