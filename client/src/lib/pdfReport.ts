@@ -82,7 +82,7 @@ function drawHeader(doc: jsPDF, report: ReportData, logo: string) {
 }
 
 function drawSummaryCard(doc: jsPDF, x: number, title: string, main: string, detail?: string) {
-  const cardWidth = 24.7;
+  const cardWidth = 25.4;
   const cardHeight = 28;
   doc.setDrawColor(210, 230, 214);
   doc.setFillColor(241, 248, 242);
@@ -94,12 +94,25 @@ function drawSummaryCard(doc: jsPDF, x: number, title: string, main: string, det
   doc.text(doc.splitTextToSize(title.toUpperCase(), cardWidth - 4), x + 2, 65);
   doc.setCharSpace(0);
   doc.setTextColor(33, 52, 39);
-  doc.setFontSize(detail ? 5.6 : 8);
-  const mainLines = doc.splitTextToSize(main, cardWidth - 4);
-  doc.text(mainLines.slice(0, detail ? 3 : 2), x + 2, detail ? 73 : 75);
+  if (!detail && main.startsWith("R$")) {
+    const amount = main.replace(/^R\$\s*/, "");
+    doc.setFontSize(5.9);
+    doc.text("R$", x + 2, 74);
+    doc.setFontSize(5.4);
+    doc.text(amount, x + 2, 80);
+  } else {
+    doc.setFontSize(detail ? 5.6 : 8);
+    const mainLines = doc.splitTextToSize(main, cardWidth - 4);
+    doc.text(mainLines.slice(0, detail ? 3 : 2), x + 2, detail ? 73 : 75);
+  }
   if (detail) {
-    doc.setFontSize(7.4);
-    doc.text(detail, x + 2, 83);
+    if (detail.startsWith("R$")) {
+      doc.setFontSize(5.4);
+      doc.text(detail.replace(/^R\$\s*/, ""), x + 2, 83);
+    } else {
+      doc.setFontSize(7.4);
+      doc.text(detail, x + 2, 83);
+    }
   }
 }
 
@@ -172,6 +185,7 @@ export async function downloadReportPdf(report: ReportData): Promise<void> {
       margin: { left: MARGIN, right: MARGIN },
       tableWidth: PAGE_WIDTH - MARGIN * 2,
       theme: "grid",
+      rowPageBreak: "avoid",
       head: [["LICITAÇÃO", "VALOR EDITAL", "VALOR ACEITO", "DESCONTO -%"]],
       body: group.licitacoes.map(licitacao => [
         [

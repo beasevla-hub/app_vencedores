@@ -26,6 +26,8 @@ describe("regras do relatório de vencedores", () => {
   it("converte valores brasileiros para número", () => {
     expect(parseCurrency("R$ 1.234.567,89")).toBe(1234567.89);
     expect(parseCurrency("  800,00 ")).toBe(800);
+    expect(parseCurrency("1839515.16")).toBe(1839515.16);
+    expect(parseCurrency("3289000")).toBe(3289000);
     expect(parseCurrency(250)).toBe(250);
     expect(parseCurrency("")).toBeNull();
   });

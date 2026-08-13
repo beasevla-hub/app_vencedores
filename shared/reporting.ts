@@ -47,12 +47,15 @@ export function parseCurrency(value: string | number | null | undefined): number
   if (typeof value === "number") return Number.isFinite(value) ? value : null;
   if (!value?.trim()) return null;
 
-  const normalized = value
+  const sanitized = value
     .replace(/R\$/gi, "")
     .replace(/\s/g, "")
-    .replace(/\./g, "")
-    .replace(",", ".")
-    .replace(/[^0-9.-]/g, "");
+    .replace(/[^0-9,.-]/g, "");
+  const normalized = sanitized.includes(",")
+    ? sanitized.replace(/\./g, "").replace(",", ".")
+    : sanitized.split(".").length === 2 && /^-?\d+\.\d{2}$/.test(sanitized)
+      ? sanitized
+      : sanitized.replace(/\./g, "");
   const parsed = Number(normalized);
   return Number.isFinite(parsed) ? parsed : null;
 }

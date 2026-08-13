@@ -12,7 +12,10 @@
 - [x] Gerar e baixar um PDF A4 com cabeçalho, órgão, período, cartões de resumo verdes, grupos de empresas, tabela de licitações e rodapé com totais.
 - [x] Posicionar o logotipo THI no topo direito e aplicar sua versão translúcida como marca d’água no PDF sem comprometer legibilidade.
 - [x] Criar testes Vitest para normalização de dados, regras de filtro, cálculos de resumo, agrupamento e desconto percentual.
-- [ ] Verificar visualmente o painel e o PDF em relação aos três modelos de referência enviados.
+- [x] Verificar visualmente o painel e o PDF em relação aos três modelos de referência enviados.
+- [x] Gerar e inspecionar visualmente um PDF de SUB PERUS no fluxo local, comparando cabeçalho, cartões, agrupamento, rodapé e paginação com o modelo de referência.
+- [x] Gerar e inspecionar visualmente um PDF de SUB SANTO AMARO no fluxo local, comparando layout, quebras de página, agrupamento por empresa e tabela com o modelo de referência.
+- [x] Registrar as diferenças visuais encontradas entre os três modelos de referência e os PDFs gerados, ajustando o layout final caso necessário.
 - [x] Documentar a configuração local do Notion, os comandos de execução e o fluxo de geração do PDF.
 - [x] Registrar que a validação visual autenticada no ambiente hospedado foi bloqueada pela falha de autenticação do Cloudflare informada pelo usuário.
 - [x] Enviar a versão documentada do projeto para o repositório GitHub beasevla-hub/app_vencedores solicitado pelo usuário.
