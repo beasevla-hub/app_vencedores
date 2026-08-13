@@ -12,6 +12,7 @@ import { trpc } from "@/lib/trpc";
 import type { ReportFilters } from "@shared/reporting";
 import { AlertCircle, ArrowDownToLine, Building2, CalendarDays, CircleDollarSign, FileSearch, FileText, HandCoins, Landmark, Loader2, Trophy, Users } from "lucide-react";
 import { FormEvent, useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
 
 const LOGO_URL = "/manus-storage/thi-engenharia-positivo_4f57432d.png";
 
@@ -56,6 +57,9 @@ export default function Home() {
     setIsDownloading(true);
     try {
       await downloadReportPdf(reportQuery.data);
+    } catch (error) {
+      const description = error instanceof Error ? error.message : "Tente novamente após recarregar a página.";
+      toast.error("Não foi possível baixar o PDF", { description });
     } finally {
       setIsDownloading(false);
     }

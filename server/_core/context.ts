@@ -11,6 +11,27 @@ export type TrpcContext = {
 export async function createContext(
   opts: CreateExpressContextOptions
 ): Promise<TrpcContext> {
+  const isLocalDevelopment = process.env.NODE_ENV === "development" && process.env.LOCAL_DEV_BYPASS_AUTH === "true";
+
+  if (isLocalDevelopment) {
+    const now = new Date();
+    return {
+      req: opts.req,
+      res: opts.res,
+      user: {
+        id: 0,
+        openId: "local-development-user",
+        name: "Desenvolvimento local",
+        email: "local@thi.local",
+        loginMethod: "local-development",
+        role: "admin",
+        createdAt: now,
+        updatedAt: now,
+        lastSignedIn: now,
+      },
+    };
+  }
+
   let user: User | null = null;
 
   try {
@@ -18,20 +39,6 @@ export async function createContext(
   } catch (error) {
     // Authentication is optional for public procedures.
     user = null;
-  }
-
-  if (!user && process.env.NODE_ENV === "development" && process.env.LOCAL_DEV_BYPASS_AUTH === "true") {
-    user = {
-      id: 0,
-      openId: "local-development-user",
-      name: "Desenvolvimento local",
-      email: "local@thi.local",
-      loginMethod: "local-development",
-      role: "admin",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      lastSignedIn: new Date(),
-    };
   }
 
   return {

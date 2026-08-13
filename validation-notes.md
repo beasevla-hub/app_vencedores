@@ -53,3 +53,11 @@ A inspeção final confirmou duas páginas, cabeçalho e cartões na primeira p�
 | SEME | Indicadores, grupos e PDF em duas páginas verificados. | Valores extensos dos cartões foram repartidos para não haver corte. |
 | SUB PERUS | Indicadores e relatório de uma página corresponderam ao modelo. | Nenhum ajuste específico necessário. |
 | SUB SANTO AMARO | Indicadores, grupos e PDF em duas páginas corresponderam ao modelo. | Leitura de ponto decimal do Notion corrigida; linhas de licitação não são divididas entre páginas. |
+
+## Execução local mínima
+
+Após remover as variáveis hospedadas de OAuth, Analytics e Storage em uma instância de desenvolvimento, o painel local carregou sem os placeholders de Analytics, sem mensagens de OAuth e com a lista dinâmica de órgãos disponível. O endpoint do logotipo respondeu com o fallback local em SVG, permitindo que a geração de PDF não dependa da infraestrutura de armazenamento hospedada.
+
+Na mesma instância mínima, a análise da SUB PERUS foi gerada normalmente para 01/01/2026 a 08/07/2026, com os mesmos indicadores, grupo e edital já validados anteriormente.
+
+O arquivo `relatorio-vencedores-sub-perus-2026-01-01-2026-07-08 (1).pdf` foi baixado com sucesso nessa instância mínima, confirmando que o fallback local do logotipo viabiliza a exportação sem OAuth, Analytics ou Storage hospedado.

@@ -18,6 +18,9 @@ import type {
 const isNonEmptyString = (value: unknown): value is string =>
   typeof value === "string" && value.length > 0;
 
+const isLocalDevelopment = () =>
+  process.env.NODE_ENV === "development" && process.env.LOCAL_DEV_BYPASS_AUTH === "true";
+
 export type SessionPayload = {
   openId: string;
   appId: string;
@@ -30,6 +33,7 @@ const GET_USER_INFO_WITH_JWT_PATH = `/webdev.v1.WebDevAuthPublicService/GetUserI
 
 class OAuthService {
   constructor(private client: ReturnType<typeof axios.create>) {
+    if (isLocalDevelopment()) return;
     console.log("[OAuth] Initialized with baseURL:", ENV.oAuthServerUrl);
     if (!ENV.oAuthServerUrl) {
       console.error(

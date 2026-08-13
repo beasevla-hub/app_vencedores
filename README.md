@@ -32,6 +32,8 @@ LOCAL_DEV_BYPASS_AUTH=true
 
 O `LOCAL_DEV_BYPASS_AUTH=true` libera apenas o painel rodando localmente com `NODE_ENV=development`; ele não cria um bypass para ambiente de produção. Remova essa variável caso queira integrar uma autenticação própria.
 
+Para a execução local, não configure `OAUTH_SERVER_URL`, `VITE_ANALYTICS_ENDPOINT`, `VITE_ANALYTICS_WEBSITE_ID` nem variáveis `BUILT_IN_FORGE_*`. O projeto ignora esses serviços hospedados no modo local e usa um logotipo de fallback para permitir a geração de PDF.
+
 No Notion, crie ou escolha uma integração interna em `notion.so/my-integrations` com permissão de leitura de conteúdo. Depois, abra a base **Captação Geral**, escolha **Compartilhar** e adicione essa integração. O app consulta a fonte de dados `Captação Geral` vinculada à base já configurada no código.
 
 ## Executar e validar

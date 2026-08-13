@@ -22,3 +22,7 @@
 - [x] Corrigir o script `pnpm dev` para execução nativa no Windows, sem depender da sintaxe `NODE_ENV=development` do Linux/macOS.
 - [x] Atualizar o README com instruções de execução no PowerShell do Windows.
 - [x] Publicar a correção de compatibilidade no repositório GitHub beasevla-hub/app_vencedores.
+- [x] Remover referências a placeholders de Analytics do HTML local para evitar a rota inválida `%VITE_ANALYTICS_ENDPOINT%`.
+- [x] Tornar a inicialização do OAuth silenciosa e opcional no modo de desenvolvimento local com bypass de autenticação.
+- [x] Corrigir a disponibilidade do logotipo para que a geração do PDF funcione na execução local do Windows.
+- [ ] Validar o download de PDF com a configuração local mínima e publicar a correção no GitHub.
