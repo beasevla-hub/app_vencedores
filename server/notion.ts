@@ -104,6 +104,25 @@ async function queryPages(filters: ReportFilters): Promise<NotionPage[]> {
   return results;
 }
 
+export async function syncNotionBase(): Promise<{ records: number; syncedAt: string }> {
+  let records = 0;
+  let cursor: string | null = null;
+
+  do {
+    const payload: Record<string, unknown> = { page_size: 100 };
+    if (cursor) payload.start_cursor = cursor;
+
+    const response = await notionRequest<NotionQueryResponse>(
+      `/data_sources/${CAPTACAO_GERAL_DATA_SOURCE_ID}/query`,
+      { method: "POST", body: JSON.stringify(payload) },
+    );
+    records += response.results.length;
+    cursor = response.has_more ? response.next_cursor : null;
+  } while (cursor);
+
+  return { records, syncedAt: new Date().toISOString() };
+}
+
 export async function getOrgans(): Promise<string[]> {
   const source = await notionRequest<NotionDataSource>(`/data_sources/${CAPTACAO_GERAL_DATA_SOURCE_ID}`);
   const options = source.properties?.["Sub/Prefeitura"]?.select?.options ?? [];

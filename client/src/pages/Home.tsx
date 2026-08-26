@@ -10,7 +10,7 @@ import { startLogin } from "@/const";
 import { downloadReportPdf } from "@/lib/pdfReport";
 import { trpc } from "@/lib/trpc";
 import type { ReportFilters } from "@shared/reporting";
-import { AlertCircle, ArrowDownToLine, Building2, CalendarDays, CircleDollarSign, FileSearch, FileText, HandCoins, Landmark, Loader2, Trophy, Users } from "lucide-react";
+import { AlertCircle, ArrowDownToLine, Building2, CalendarDays, CircleDollarSign, FileSearch, FileText, HandCoins, Landmark, Loader2, RefreshCw, Trophy, Users } from "lucide-react";
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
@@ -36,6 +36,8 @@ export default function Home() {
   const [appliedFilters, setAppliedFilters] = useState<ReportFilters | null>(null);
   const [isDownloading, setIsDownloading] = useState(false);
 
+  const trpcUtils = trpc.useUtils();
+  const syncMutation = trpc.report.sync.useMutation();
   const organsQuery = trpc.report.organs.useQuery(undefined, { enabled: isAuthenticated });
   const reportQuery = trpc.report.generate.useQuery(appliedFilters as ReportFilters, { enabled: Boolean(appliedFilters) && isAuthenticated });
 
@@ -49,6 +51,22 @@ export default function Home() {
     event.preventDefault();
     if (filters.orgao && filters.startDate && filters.endDate && filters.startDate <= filters.endDate) {
       setAppliedFilters({ ...filters });
+    }
+  };
+
+  const handleSync = async () => {
+    try {
+      const result = await syncMutation.mutateAsync();
+      await Promise.all([
+        trpcUtils.report.organs.invalidate(),
+        appliedFilters ? trpcUtils.report.generate.invalidate(appliedFilters) : Promise.resolve(),
+      ]);
+      toast.success("Base de dados atualizada", {
+        description: `${result.records} registro${result.records === 1 ? "" : "s"} sincronizado${result.records === 1 ? "" : "s"} com o Notion.`,
+      });
+    } catch (error) {
+      const description = error instanceof Error ? error.message : "Tente novamente em alguns instantes.";
+      toast.error("Não foi possível atualizar a base de dados", { description });
     }
   };
 
@@ -112,7 +130,13 @@ export default function Home() {
             <h2 className="mt-2 text-3xl font-bold tracking-[-0.045em] text-[#173C25] sm:text-4xl">Resumo por órgão e período</h2>
             <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[#68776B]">Analise o volume de licitações, valores publicados, valores contratados e economia gerada a partir dos resultados finais registrados no Notion.</p>
           </div>
-          <div className="rounded-sm border border-[#CFE2D1] bg-[#EFF8F0] px-4 py-3 text-sm text-[#31573B]"><span className="font-bold">Critério aplicado:</span> status <strong>Aceita e Habilitada</strong> ou <strong>Perdida</strong>.</div>
+          <div className="flex flex-col gap-3">
+            <div className="rounded-sm border border-[#CFE2D1] bg-[#EFF8F0] px-4 py-3 text-sm text-[#31573B]"><span className="font-bold">Critério aplicado:</span> status <strong>Aceita e Habilitada</strong> ou <strong>Perdida</strong>.</div>
+            <Button type="button" onClick={handleSync} disabled={syncMutation.isPending} variant="outline" className="h-11 rounded-sm border-[#174C2B] bg-white px-5 font-bold text-[#174C2B] hover:bg-[#EFF8F0]">
+              {syncMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
+              {syncMutation.isPending ? "Atualizando…" : "Atualizar base de dados"}
+            </Button>
+          </div>
         </section>
 
         <section className="mt-7 border-y border-[#D9E8DB] bg-white px-5 py-5 sm:px-6">

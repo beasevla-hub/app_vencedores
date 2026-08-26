@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { getOrgans, getReport } from "../notion";
+import { getOrgans, getReport, syncNotionBase } from "../notion";
 import { protectedProcedure, router } from "../_core/trpc";
 
 const reportFiltersSchema = z
@@ -16,4 +16,5 @@ const reportFiltersSchema = z
 export const reportRouter = router({
   organs: protectedProcedure.query(() => getOrgans()),
   generate: protectedProcedure.input(reportFiltersSchema).query(({ input }) => getReport(input)),
+  sync: protectedProcedure.mutation(() => syncNotionBase()),
 });
