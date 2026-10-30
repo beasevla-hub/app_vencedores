@@ -57,6 +57,7 @@ function plainText(property: NotionProperty | undefined): string {
 function normalizePage(page: NotionPage): AuctionRecord[] {
   const properties = page.properties;
   const empresa = plainText(properties["Emp. em Análise"]);
+  const cnpj = plainText(properties.CNPJ) || null;
   const valorPublicado = plainText(properties["VALOR DA OBRA"]);
   const valorAceito = plainText(properties["Valor aceito"]);
   const base: AuctionRecord = {
@@ -65,6 +66,8 @@ function normalizePage(page: NotionPage): AuctionRecord[] {
     status: plainText(properties.STATUS),
     scheduledAt: plainText(properties["DATA E HORA"]) || null,
     empresa,
+    empresaOriginal: empresa,
+    cnpj,
     edital: plainText(properties["N DO EDITAL"]),
     processo: plainText(properties.PROCESSO),
     objeto: plainText(properties.OBJETO),

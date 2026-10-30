@@ -41,6 +41,7 @@ export function CompanyReportGroup({ group }: { group: CompanyGroup }) {
                     {licitacao.processo ? <span className="text-[10px] text-[#7B877E]">Processo: {licitacao.processo}</span> : null}
                   </div>
                   <p className="mt-1 max-w-3xl text-[11px] leading-snug text-[#3E4D42]">{licitacao.objeto || "Objeto não informado."}</p>
+                  {licitacao.empresaOriginal && licitacao.empresaOriginal !== group.empresa ? <p className="mt-1 text-[10px] text-[#7B877E]">Nome no Notion: {licitacao.empresaOriginal}</p> : null}
                 </td>
                 <td className="px-3 py-2 text-right align-top text-xs font-medium text-[#25382B]">{formatCurrency(licitacao.valorPublicado)}</td>
                 <td className="px-3 py-2 text-right align-top text-xs font-bold text-[#174C2B]">{formatCurrency(licitacao.valorAceito)}</td>

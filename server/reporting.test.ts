@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { AuctionRecord, buildReport, calculateDiscount, expandAuctionLots, parseCurrency } from "../shared/reporting";
+import { AuctionRecord, buildReport, calculateDiscount, expandAuctionLots, identifyCompany, normalizeCompanyName, parseCurrency } from "../shared/reporting";
 
 const filters = { orgao: "SEME", startDate: "2026-01-01", endDate: "2026-12-31" };
 
@@ -112,5 +112,55 @@ describe("regras do relatório de vencedores", () => {
     expect(report.summary.totalLicitacoes).toBe(1);
     expect(report.groups.reduce((sum, group) => sum + group.licitacoes.length, 0)).toBe(10);
     expect(new Set(report.records.map(record => record.licitacaoId)).size).toBe(1);
+  });
+
+  it("normaliza acentos, caixa, conectivos, pontuação e espaços duplicados", () => {
+    const expected = normalizeCompanyName("AMARAL CONSTRUCOES E COMERCIO LTDA");
+    for (const variant of [
+      "AMARAL CONSTRUÇÕES E COMÉRCIO LTDA.",
+      "Amaral Construções, e Comercio Ltda",
+      "  amaral   construções & comércio ltda  ",
+    ]) expect(normalizeCompanyName(variant)).toBe(expected);
+  });
+
+  it("normaliza abreviações societárias sem apagar diferenças entre tipos jurídicos", () => {
+    expect(normalizeCompanyName("Empresa Exemplo S/A")).toBe(normalizeCompanyName("EMPRESA EXEMPLO SA"));
+    expect(normalizeCompanyName("Empresa Exemplo Ltda.")).toBe(normalizeCompanyName("EMPRESA EXEMPLO LTDA"));
+    expect(normalizeCompanyName("Empresa Exemplo SA")).not.toBe(normalizeCompanyName("Empresa Exemplo LTDA"));
+  });
+
+  it("resolve aliases para a empresa canônica e mantém o nome original rastreável", () => {
+    const canonical = identifyCompany("AMARAL CONSTRUÇÕES E COMÉRCIO LTDA");
+    const alias = identifyCompany("Amaral Construções & Comercio");
+    expect(alias.id).toBe(canonical.id);
+    expect(alias.canonicalName).toBe("AMARAL CONSTRUÇÕES E COMÉRCIO LTDA");
+    expect(alias.originalName).toBe("Amaral Construções & Comercio");
+  });
+
+  it("não une automaticamente nomes parecidos de empresas potencialmente distintas", () => {
+    const engineering = identifyCompany("Amaral Engenharia LTDA");
+    const construction = identifyCompany("Amaral Construções LTDA");
+    expect(engineering.id).not.toBe(construction.id);
+  });
+
+  it("usa CNPJ como identidade prioritária e não mistura CNPJs diferentes", () => {
+    expect(identifyCompany("Empresa Uma", "12.345.678/0001-90").id).toBe(identifyCompany("Empresa Outra", "12345678000190").id);
+    expect(identifyCompany("Empresa Uma", "12.345.678/0001-90").id).not.toBe(identifyCompany("Empresa Uma", "98.765.432/0001-10").id);
+  });
+
+  it("consolida aliases repetidos em lotes sem perder grafia original ou valores", () => {
+    const report = buildReport([
+      { ...records[0], id: "alias-a", licitacaoId: "lic-1", loteNumero: 1, empresa: "AMARAL CONSTRUÇÕES, E COMÉRCIO", empresaOriginal: "AMARAL CONSTRUÇÕES, E COMÉRCIO", valorPublicado: 1000, valorAceito: 900 },
+      { ...records[0], id: "alias-b", licitacaoId: "lic-1", loteNumero: 2, empresa: "Amaral Construções & Comercio LTDA.", empresaOriginal: "Amaral Construções & Comercio LTDA.", valorPublicado: 2000, valorAceito: 1800 },
+    ], filters);
+    expect(report.groups).toHaveLength(1);
+    expect(report.groups[0].empresa).toBe("AMARAL CONSTRUÇÕES E COMÉRCIO LTDA");
+    expect(report.groups[0].totalAceito).toBe(2700);
+    expect(report.summary.valorPublicado).toBe(3000);
+    expect(report.summary.valorContratado).toBe(2700);
+    expect(report.records.map(record => record.empresaOriginal)).toEqual([
+      "AMARAL CONSTRUÇÕES, E COMÉRCIO",
+      "Amaral Construções & Comercio LTDA.",
+    ]);
   });
 });

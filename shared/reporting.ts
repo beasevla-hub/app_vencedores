@@ -6,6 +6,9 @@ export type AuctionRecord = {
   /** Identidade da página/licitação original, compartilhada por seus lotes. */
   licitacaoId?: string;
   loteNumero?: number | null;
+  empresaOriginal?: string;
+  empresaId?: string;
+  cnpj?: string | null;
   orgao: string;
   status: string;
   scheduledAt: string | null;
@@ -48,6 +51,59 @@ export type ReportData = {
   records: AuctionRecord[];
 };
 
+/** Cadastro controlado: aliases só são unidos quando explicitamente cadastrados. */
+export const COMPANY_ALIASES: ReadonlyArray<{ canonicalName: string; aliases: readonly string[] }> = [
+  {
+    canonicalName: "AMARAL CONSTRUÇÕES E COMÉRCIO LTDA",
+    aliases: [
+      "AMARAL CONSTRUCOES E COMERCIO",
+      "AMARAL CONSTRUCOES E COMERCIO LTDA",
+      "AMARAL CONSTRUÇÕES, E COMÉRCIO",
+      "AMARAL CONSTRUÇÕES, E COMÉRCIO LTDA",
+      "AMARAL CONSTRUÇÕES & COMÉRCIO",
+      "AMARAL CONSTRUÇÕES & COMÉRCIO LTDA",
+      "Amaral Construções e Comercio LTDA.",
+    ],
+  },
+];
+
+/** Chave determinística: acentos, caixa, pontuação, espaços e conectivo & são ignorados. */
+export function normalizeCompanyName(value: string): string {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLocaleUpperCase("pt-BR")
+    .replace(/&/g, " E ")
+    .replace(/[^A-Z0-9]+/g, " ")
+    .trim()
+    .replace(/\s+/g, " ")
+    .replace(/\bS\s+A\b/g, "SA");
+}
+
+export type CompanyIdentity = { id: string; canonicalName: string; originalName: string; cnpj: string | null };
+const COMPANY_ALIAS_LOOKUP = new Map<string, string>();
+for (const entry of COMPANY_ALIASES) {
+  COMPANY_ALIAS_LOOKUP.set(normalizeCompanyName(entry.canonicalName), entry.canonicalName);
+  for (const alias of entry.aliases) COMPANY_ALIAS_LOOKUP.set(normalizeCompanyName(alias), entry.canonicalName);
+}
+
+/** Não usa similaridade aproximada para mesclar: nomes só se unem por chave exata ou alias. */
+export function identifyCompany(name: string, cnpj?: string | null): CompanyIdentity {
+  const originalName = name.trim();
+  const normalizedName = normalizeCompanyName(originalName);
+  const digits = cnpj?.replace(/\D/g, "") ?? "";
+  const normalizedCnpj = digits.length === 14 ? digits : null;
+  const registeredCanonical = COMPANY_ALIAS_LOOKUP.get(normalizedName);
+  const canonicalName = registeredCanonical ?? (originalName || "Empresa não informada");
+  const canonicalKey = normalizeCompanyName(registeredCanonical ?? originalName) || "EMPRESA NÃO INFORMADA";
+  return {
+    id: normalizedCnpj ? `cnpj:${normalizedCnpj}` : `nome:${canonicalKey}`,
+    canonicalName,
+    originalName,
+    cnpj: normalizedCnpj,
+  };
+}
+
 /** Extrai exclusivamente pares "LOTE n: valor"; nunca associa por posição. */
 export function parseLotField(value: string): Map<number, string> {
   const entries = new Map<number, string>();
@@ -81,13 +137,14 @@ export function expandAuctionLots(
     ...Array.from(publishedByLot.keys()),
     ...Array.from(acceptedByLot.keys()),
   ])).sort((a, b) => a - b);
-  if (lotNumbers.length === 0) return [{ ...base, licitacaoId: base.id, loteNumero: null }];
+  if (lotNumbers.length === 0) return [{ ...base, licitacaoId: base.id, loteNumero: null, empresaOriginal: base.empresaOriginal ?? base.empresa }];
   return lotNumbers.map(loteNumero => ({
     ...base,
     id: `${base.id}#lote-${loteNumero}`,
     licitacaoId: base.id,
     loteNumero,
     empresa: companyByLot.get(loteNumero) ?? "",
+    empresaOriginal: companyByLot.get(loteNumero) ?? "",
     valorPublicado: parseCurrency(publishedByLot.get(loteNumero)),
     valorAceito: parseCurrency(acceptedByLot.get(loteNumero)),
   }));
@@ -125,19 +182,22 @@ export function calculateDiscount(valorPublicado: number | null, valorAceito: nu
 }
 
 export function buildReport(records: AuctionRecord[], filters: ReportFilters): ReportData {
-  const filteredRecords = records.filter(record => isReportRecord(record, filters));
+  const filteredRecords = records
+    .filter(record => isReportRecord(record, filters))
+    .map(record => {
+      const identity = identifyCompany(record.empresaOriginal ?? record.empresa, record.cnpj);
+      return { ...record, empresa: identity.canonicalName, empresaId: identity.id, empresaOriginal: identity.originalName };
+    });
   const groupMap = new Map<string, AuctionRecord[]>();
-
   for (const record of filteredRecords) {
-    const company = record.empresa.trim() || "Empresa não informada";
-    const group = groupMap.get(company) ?? [];
+    const identity = record.empresaId ?? identifyCompany(record.empresaOriginal ?? record.empresa, record.cnpj).id;
+    const group = groupMap.get(identity) ?? [];
     group.push(record);
-    groupMap.set(company, group);
+    groupMap.set(identity, group);
   }
-
   const groups = Array.from(groupMap.entries())
-    .map(([empresa, licitacoes]) => ({
-      empresa,
+    .map(([, licitacoes]) => ({
+      empresa: licitacoes[0].empresa,
       licitacoes: [...licitacoes].sort((a, b) => (b.valorAceito ?? 0) - (a.valorAceito ?? 0)),
       totalAceito: licitacoes.reduce((total, record) => total + (record.valorAceito ?? 0), 0),
     }))

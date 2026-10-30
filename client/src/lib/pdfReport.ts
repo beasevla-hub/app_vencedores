@@ -192,7 +192,7 @@ function drawCompanyGroup(doc: jsPDF, group: CompanyGroup, y: number): number {
     rowPageBreak: "avoid",
     head: [["LICITAÇÃO / LOTE", "VALOR EDITAL", "VALOR ACEITO", "DESCONTO -%"]],
     body: group.licitacoes.map(licitacao => [
-      [`${licitacao.edital || "Edital não informado"}${licitacao.loteNumero != null ? `   Lote ${licitacao.loteNumero}` : ""}${licitacao.processo ? `   Processo: ${licitacao.processo}` : ""}\n${licitacao.objeto || "Objeto não informado."}`],
+      [`${licitacao.edital || "Edital não informado"}${licitacao.loteNumero != null ? `   Lote ${licitacao.loteNumero}` : ""}${licitacao.processo ? `   Processo: ${licitacao.processo}` : ""}\n${licitacao.objeto || "Objeto não informado."}${licitacao.empresaOriginal && licitacao.empresaOriginal !== group.empresa ? `\nNome no Notion: ${licitacao.empresaOriginal}` : ""}`],
       [licitacao.valorPublicado === null ? "—" : formatCurrency(licitacao.valorPublicado)],
       [licitacao.valorAceito === null ? "—" : formatCurrency(licitacao.valorAceito)],
       [formatDiscount(licitacao.valorPublicado, licitacao.valorAceito)],
