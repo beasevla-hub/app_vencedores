@@ -1,4 +1,4 @@
-import { AuctionRecord, ReportData, ReportFilters, buildReport, parseCurrency } from "../shared/reporting";
+import { AuctionRecord, ReportData, ReportFilters, buildReport, expandAuctionLots, parseCurrency } from "../shared/reporting";
 
 const NOTION_API_URL = "https://api.notion.com/v1";
 const NOTION_API_VERSION = "2026-03-11";
@@ -54,20 +54,24 @@ function plainText(property: NotionProperty | undefined): string {
   return "";
 }
 
-function normalizePage(page: NotionPage): AuctionRecord {
+function normalizePage(page: NotionPage): AuctionRecord[] {
   const properties = page.properties;
-  return {
+  const empresa = plainText(properties["Emp. em Análise"]);
+  const valorPublicado = plainText(properties["VALOR DA OBRA"]);
+  const valorAceito = plainText(properties["Valor aceito"]);
+  const base: AuctionRecord = {
     id: page.id,
     orgao: plainText(properties["Sub/Prefeitura"]),
     status: plainText(properties.STATUS),
     scheduledAt: plainText(properties["DATA E HORA"]) || null,
-    empresa: plainText(properties["Emp. em Análise"]),
+    empresa,
     edital: plainText(properties["N DO EDITAL"]),
     processo: plainText(properties.PROCESSO),
     objeto: plainText(properties.OBJETO),
-    valorPublicado: parseCurrency(plainText(properties["VALOR DA OBRA"])),
-    valorAceito: parseCurrency(plainText(properties["Valor aceito"])),
+    valorPublicado: parseCurrency(valorPublicado),
+    valorAceito: parseCurrency(valorAceito),
   };
+  return expandAuctionLots(base, { empresa, valorPublicado, valorAceito });
 }
 
 async function queryPages(filters: ReportFilters): Promise<NotionPage[]> {
@@ -134,5 +138,5 @@ export async function getOrgans(): Promise<string[]> {
 
 export async function getReport(filters: ReportFilters): Promise<ReportData> {
   const pages = await queryPages(filters);
-  return buildReport(pages.map(normalizePage), filters);
+  return buildReport(pages.flatMap(normalizePage), filters);
 }

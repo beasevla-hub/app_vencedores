@@ -1,7 +1,11 @@
 export const FINAL_RESULT_STATUSES = ["Aceita e Habilitada", "Perdida"] as const;
 
 export type AuctionRecord = {
+  /** ID exclusivo da linha analisável (por página e lote quando aplicável). */
   id: string;
+  /** Identidade da página/licitação original, compartilhada por seus lotes. */
+  licitacaoId?: string;
+  loteNumero?: number | null;
   orgao: string;
   status: string;
   scheduledAt: string | null;
@@ -28,6 +32,7 @@ export type CompanyGroup = {
 export type ReportSummary = {
   totalEmpresas: number;
   totalLicitacoes: number;
+  totalLotes: number;
   empresaMaiorValorAceito: string | null;
   totalMaiorEmpresa: number;
   maiorContrato: number;
@@ -42,6 +47,51 @@ export type ReportData = {
   groups: CompanyGroup[];
   records: AuctionRecord[];
 };
+
+/** Extrai exclusivamente pares "LOTE n: valor"; nunca associa por posição. */
+export function parseLotField(value: string): Map<number, string> {
+  const entries = new Map<number, string>();
+  const marker = /\bLOTE\s*(\d+)\s*:/gi;
+  const matches: RegExpExecArray[] = [];
+  let current: RegExpExecArray | null;
+  while ((current = marker.exec(value)) !== null) matches.push(current);
+  matches.forEach((match, index) => {
+    const lotNumber = Number(match[1]);
+    if (!Number.isSafeInteger(lotNumber) || lotNumber < 1) return;
+    const start = (match.index ?? 0) + match[0].length;
+    const end = matches[index + 1]?.index ?? value.length;
+    const content = value.slice(start, end).trim().replace(/\s*(?:\/\/|;|\|)\s*$/, "").trim();
+    entries.set(lotNumber, content);
+  });
+  return entries;
+}
+
+export type LotFields = { empresa: string; valorPublicado: string; valorAceito: string };
+
+/** Expande campos rotulados em registros individuais e mantém o ID original. */
+export function expandAuctionLots(
+  base: AuctionRecord,
+  fields: LotFields,
+): AuctionRecord[] {
+  const companyByLot = parseLotField(fields.empresa);
+  const publishedByLot = parseLotField(fields.valorPublicado);
+  const acceptedByLot = parseLotField(fields.valorAceito);
+  const lotNumbers = Array.from(new Set<number>([
+    ...Array.from(companyByLot.keys()),
+    ...Array.from(publishedByLot.keys()),
+    ...Array.from(acceptedByLot.keys()),
+  ])).sort((a, b) => a - b);
+  if (lotNumbers.length === 0) return [{ ...base, licitacaoId: base.id, loteNumero: null }];
+  return lotNumbers.map(loteNumero => ({
+    ...base,
+    id: `${base.id}#lote-${loteNumero}`,
+    licitacaoId: base.id,
+    loteNumero,
+    empresa: companyByLot.get(loteNumero) ?? "",
+    valorPublicado: parseCurrency(publishedByLot.get(loteNumero)),
+    valorAceito: parseCurrency(acceptedByLot.get(loteNumero)),
+  }));
+}
 
 export function parseCurrency(value: string | number | null | undefined): number | null {
   if (typeof value === "number") return Number.isFinite(value) ? value : null;
@@ -98,13 +148,15 @@ export function buildReport(records: AuctionRecord[], filters: ReportFilters): R
   const maiorContrato = filteredRecords.reduce((highest, record) => Math.max(highest, record.valorAceito ?? 0), 0);
   const maiorEmpresa = groups[0];
 
+  const auctionIds = new Set(filteredRecords.map(record => record.licitacaoId ?? record.id));
   return {
     filters,
     records: filteredRecords,
     groups,
     summary: {
       totalEmpresas: groups.length,
-      totalLicitacoes: filteredRecords.length,
+      totalLicitacoes: auctionIds.size,
+      totalLotes: filteredRecords.filter(record => record.loteNumero != null).length,
       empresaMaiorValorAceito: maiorEmpresa?.empresa ?? null,
       totalMaiorEmpresa: maiorEmpresa?.totalAceito ?? 0,
       maiorContrato,

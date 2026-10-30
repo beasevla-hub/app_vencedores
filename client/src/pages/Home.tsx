@@ -166,9 +166,10 @@ export default function Home() {
               <div><p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#65816A]">Relatório de vencedores</p><h2 className="mt-1 text-2xl font-bold uppercase tracking-[-0.04em] text-[#174C2B]">{report.filters.orgao}</h2><p className="mt-1 text-sm text-[#718076]">{formattedDate(report.filters.startDate)} até {formattedDate(report.filters.endDate)}</p></div>
               <Button onClick={handleDownload} disabled={report.records.length === 0 || isDownloading} className="h-11 rounded-sm bg-[#52A660] px-5 font-bold text-white hover:bg-[#438B50]">{isDownloading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowDownToLine className="h-4 w-4" />}Baixar PDF</Button>
             </section>
-            <section className="mt-5 grid gap-1.5 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7">
+            <section className="mt-5 grid gap-1.5 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-8">
               <SummaryCard icon={Users} label="Empresas" value={String(report.summary.totalEmpresas)} />
               <SummaryCard icon={FileText} label="Licitações" value={String(report.summary.totalLicitacoes)} />
+              <SummaryCard icon={FileText} label="Lotes" value={String(report.summary.totalLotes)} />
               <SummaryCard icon={Trophy} label="Empresa c/ maior valor aceito" value={report.summary.empresaMaiorValorAceito ?? "—"} supporting={formatCurrency(report.summary.totalMaiorEmpresa)} emphasized />
               <SummaryCard icon={Landmark} label="Maior contrato" value={formatCurrency(report.summary.maiorContrato)} />
               <SummaryCard icon={Building2} label="Valor publicado" value={formatCurrency(report.summary.valorPublicado)} />

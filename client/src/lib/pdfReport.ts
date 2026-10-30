@@ -129,13 +129,14 @@ function drawSummaryCard(doc: jsPDF, x: number, card: SummaryCard) {
 
 function drawSummary(doc: jsPDF, report: ReportData) {
   const cards: SummaryCard[] = [
-    { label: "Empresas", value: String(report.summary.totalEmpresas), width: 18.8 },
-    { label: "Licitações", value: String(report.summary.totalLicitacoes), width: 19.8 },
-    { label: "Empresa c/ maior valor aceito", value: report.summary.empresaMaiorValorAceito ?? "—", detail: formatCurrency(report.summary.totalMaiorEmpresa), width: 30.2 },
-    { label: "Maior contrato", value: formatCurrency(report.summary.maiorContrato), width: 27.4 },
-    { label: "Valor publicado", value: formatCurrency(report.summary.valorPublicado), width: 27.4 },
-    { label: "Valor contratado", value: formatCurrency(report.summary.valorContratado), width: 27.4 },
-    { label: "Saldo", value: formatCurrency(report.summary.saldo), width: 26.8 },
+    { label: "Empresas", value: String(report.summary.totalEmpresas), width: 15 },
+    { label: "Licitações", value: String(report.summary.totalLicitacoes), width: 15 },
+    { label: "Lotes", value: String(report.summary.totalLotes), width: 15 },
+    { label: "Empresa c/ maior valor aceito", value: report.summary.empresaMaiorValorAceito ?? "—", detail: formatCurrency(report.summary.totalMaiorEmpresa), width: 29 },
+    { label: "Maior contrato", value: formatCurrency(report.summary.maiorContrato), width: 25 },
+    { label: "Valor publicado", value: formatCurrency(report.summary.valorPublicado), width: 25 },
+    { label: "Valor contratado", value: formatCurrency(report.summary.valorContratado), width: 25 },
+    { label: "Saldo", value: formatCurrency(report.summary.saldo), width: 25 },
   ];
   let x = MARGIN;
   cards.forEach(card => {
@@ -164,6 +165,8 @@ function estimatedGroupHeight(doc: jsPDF, group: CompanyGroup): number {
 }
 
 function drawCompanyGroup(doc: jsPDF, group: CompanyGroup, y: number): number {
+  const totalLicitacoes = new Set(group.licitacoes.map(record => record.licitacaoId ?? record.id)).size;
+  const totalLotes = group.licitacoes.filter(record => record.loteNumero != null).length;
   const headerHeight = groupHeaderHeight(doc, group);
   doc.setDrawColor(...BRAND_GREEN);
   doc.setFillColor(252, 253, 252);
@@ -175,7 +178,7 @@ function drawCompanyGroup(doc: jsPDF, group: CompanyGroup, y: number): number {
   doc.setFont("helvetica", "normal");
   doc.setFontSize(7.3);
   doc.setTextColor(111, 121, 114);
-  doc.text(`${group.licitacoes.length} licitação(ões)`, MARGIN + 2.2, y + headerHeight - 3.4);
+  doc.text(`${totalLicitacoes} licitação(ões)${totalLotes ? ` · ${totalLotes} lote(s)` : ""}`, MARGIN + 2.2, y + headerHeight - 3.4);
   doc.setFont("helvetica", "bold");
   doc.setFontSize(10);
   doc.setTextColor(35, 48, 39);
@@ -187,9 +190,9 @@ function drawCompanyGroup(doc: jsPDF, group: CompanyGroup, y: number): number {
     tableWidth: CONTENT_WIDTH,
     theme: "grid",
     rowPageBreak: "avoid",
-    head: [["LICITAÇÃO", "VALOR EDITAL", "VALOR ACEITO", "DESCONTO -%"]],
+    head: [["LICITAÇÃO / LOTE", "VALOR EDITAL", "VALOR ACEITO", "DESCONTO -%"]],
     body: group.licitacoes.map(licitacao => [
-      [`${licitacao.edital || "Edital não informado"}${licitacao.processo ? `   Processo: ${licitacao.processo}` : ""}\n${licitacao.objeto || "Objeto não informado."}`],
+      [`${licitacao.edital || "Edital não informado"}${licitacao.loteNumero != null ? `   Lote ${licitacao.loteNumero}` : ""}${licitacao.processo ? `   Processo: ${licitacao.processo}` : ""}\n${licitacao.objeto || "Objeto não informado."}`],
       [licitacao.valorPublicado === null ? "—" : formatCurrency(licitacao.valorPublicado)],
       [licitacao.valorAceito === null ? "—" : formatCurrency(licitacao.valorAceito)],
       [formatDiscount(licitacao.valorPublicado, licitacao.valorAceito)],
@@ -230,7 +233,7 @@ function drawFooter(doc: jsPDF, report: ReportData, page: number, totalPages: nu
   doc.setFontSize(6.5);
   doc.setCharSpace(0.35);
   doc.setTextColor(104, 114, 107);
-  doc.text(`${report.summary.totalEmpresas} EMPRESAS   ${report.summary.totalLicitacoes} LICITAÇÕES   ${formatCurrency(report.summary.valorContratado)}`, MARGIN, 290.5);
+  doc.text(`${report.summary.totalEmpresas} EMPRESAS   ${report.summary.totalLicitacoes} LICITAÇÕES   ${report.summary.totalLotes} LOTES   ${formatCurrency(report.summary.valorContratado)}`, MARGIN, 290.5);
   doc.setCharSpace(0);
   doc.text(`PÁGINA ${page}/${totalPages}`, PAGE_WIDTH - MARGIN, 290.5, { align: "right" });
 }

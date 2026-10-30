@@ -11,12 +11,14 @@ function formatDiscount(published: number | null, accepted: number | null): stri
 }
 
 export function CompanyReportGroup({ group }: { group: CompanyGroup }) {
+  const totalLicitacoes = new Set(group.licitacoes.map(record => record.licitacaoId ?? record.id)).size;
+  const totalLotes = group.licitacoes.filter(record => record.loteNumero != null).length;
   return (
     <section className="overflow-hidden border border-[#9EC7A5] bg-white">
       <div className="flex flex-col gap-1 border-b border-[#9EC7A5] bg-[#FCFDFC] px-3 py-2 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h3 className="text-sm font-bold uppercase leading-tight tracking-tight text-[#193D25]">{group.empresa}</h3>
-          <p className="mt-0.5 text-[11px] text-[#718076]">{group.licitacoes.length} licitação(ões)</p>
+          <p className="mt-0.5 text-[11px] text-[#718076]">{totalLicitacoes} licitação(ões){totalLotes ? ` · ${totalLotes} lote(s)` : ""}</p>
         </div>
         <p className="text-sm font-bold text-[#174C2B]">{formatCurrency(group.totalAceito)}</p>
       </div>
@@ -24,7 +26,7 @@ export function CompanyReportGroup({ group }: { group: CompanyGroup }) {
         <table className="min-w-[760px] w-full border-collapse text-left">
           <thead>
             <tr className="border-b border-[#A8CEAE] bg-white text-[9px] uppercase tracking-[0.1em] text-[#405943]">
-              <th className="px-3 py-1.5 font-bold">Licitação</th>
+              <th className="px-3 py-1.5 font-bold">Licitação / lote</th>
               <th className="w-36 px-3 py-1.5 text-right font-bold">Valor edital</th>
               <th className="w-36 px-3 py-1.5 text-right font-bold">Valor aceito</th>
               <th className="w-26 px-3 py-1.5 text-right font-bold">Desconto -%</th>
@@ -35,7 +37,7 @@ export function CompanyReportGroup({ group }: { group: CompanyGroup }) {
               <tr key={licitacao.id} className="border-b border-[#E1EEE3] last:border-0">
                 <td className="px-3 py-2 align-top">
                   <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
-                    <span className="text-xs font-bold text-[#1B4329]">{licitacao.edital || "Edital não informado"}</span>
+                    <span className="text-xs font-bold text-[#1B4329]">{licitacao.edital || "Edital não informado"}{licitacao.loteNumero != null ? ` · Lote ${licitacao.loteNumero}` : ""}</span>
                     {licitacao.processo ? <span className="text-[10px] text-[#7B877E]">Processo: {licitacao.processo}</span> : null}
                   </div>
                   <p className="mt-1 max-w-3xl text-[11px] leading-snug text-[#3E4D42]">{licitacao.objeto || "Objeto não informado."}</p>
