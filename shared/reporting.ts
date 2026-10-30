@@ -65,6 +65,13 @@ export const COMPANY_ALIASES: ReadonlyArray<{ canonicalName: string; aliases: re
       "Amaral Construções e Comercio LTDA.",
     ],
   },
+  {
+    canonicalName: "AMARAL ENGENHARIA CONSTRUÇÃO E COMÉRCIO LTDA",
+    aliases: [
+      "AMARAL ENGENHARIA CONSTRUÇÃO E COMÉRCIO LTDA",
+      "AMARAL ENGENHARIA, E CONSTRUÇÃO E COMÉRCIO LTDA",
+    ],
+  },
 ];
 
 /** Chave determinística: acentos, caixa, pontuação, espaços e conectivo & são ignorados. */
@@ -73,6 +80,9 @@ export function normalizeCompanyName(value: string): string {
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .toLocaleUpperCase("pt-BR")
+    // Em nomes com vários conectivos, ignora a vírgula seguida de um "E" redundante.
+    // Nomes de duas partes como "CONSTRUÇÕES, E COMÉRCIO" preservam o conectivo.
+    .replace(/,\s*E(?=\s+[^,]*\s+E\b)/g, " ")
     .replace(/&/g, " E ")
     .replace(/[^A-Z0-9]+/g, " ")
     .trim()

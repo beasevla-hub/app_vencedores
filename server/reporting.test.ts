@@ -137,6 +137,28 @@ describe("regras do relatório de vencedores", () => {
     expect(alias.originalName).toBe("Amaral Construções & Comercio");
   });
 
+  it("unifica as duas grafias de Amaral Engenharia, soma valores e preserva ambos os originais", () => {
+    const firstName = "AMARAL ENGENHARIA CONSTRUÇÃO E COMERCIO LTDA";
+    const secondName = "AMARAL ENGENHARIA, E CONSTRUÇÃO E COMÉRCIO LTDA";
+    const canonicalName = "AMARAL ENGENHARIA CONSTRUÇÃO E COMÉRCIO LTDA";
+    expect(normalizeCompanyName(firstName)).toBe(normalizeCompanyName(secondName));
+
+    const firstIdentity = identifyCompany(firstName);
+    const secondIdentity = identifyCompany(secondName);
+    expect(firstIdentity.id).toBe(secondIdentity.id);
+    expect(firstIdentity.canonicalName).toBe(canonicalName);
+    expect(secondIdentity.canonicalName).toBe(canonicalName);
+
+    const report = buildReport([
+      { ...records[0], id: "amaral-first", empresa: firstName, empresaOriginal: firstName, valorAceito: 900 },
+      { ...records[0], id: "amaral-second", empresa: secondName, empresaOriginal: secondName, valorAceito: 1800 },
+    ], filters);
+    expect(report.groups).toHaveLength(1);
+    expect(report.groups[0].empresa).toBe(canonicalName);
+    expect(report.groups[0].totalAceito).toBe(2700);
+    expect(report.records.map(record => record.empresaOriginal)).toEqual([firstName, secondName]);
+  });
+
   it("não une automaticamente nomes parecidos de empresas potencialmente distintas", () => {
     const engineering = identifyCompany("Amaral Engenharia LTDA");
     const construction = identifyCompany("Amaral Construções LTDA");
