@@ -160,21 +160,92 @@ export function expandAuctionLots(
   }));
 }
 
+function normalizeIntegerDigits(value: string, separator: string | null): string | null {
+  if (!value) return null;
+  if (!separator) return /^\d+$/.test(value) ? value : null;
+
+  const groups = value.split(separator);
+  if (groups.length === 1) return /^\d+$/.test(value) ? value : null;
+  if (!groups.every(group => /^\d+$/.test(group))) return null;
+  if (groups[0].length > 3) return null;
+  if (groups.slice(1).some(group => group.length !== 3)) return null;
+  return groups.join("");
+}
+
 export function parseCurrency(value: string | number | null | undefined): number | null {
   if (typeof value === "number") return Number.isFinite(value) ? value : null;
   if (!value?.trim()) return null;
 
-  const sanitized = value
-    .replace(/R\$/gi, "")
-    .replace(/\s/g, "")
-    .replace(/[^0-9,.-]/g, "");
-  const normalized = sanitized.includes(",")
-    ? sanitized.replace(/\./g, "").replace(",", ".")
-    : sanitized.split(".").length === 2 && /^-?\d+\.\d{2}$/.test(sanitized)
-      ? sanitized
-      : sanitized.replace(/\./g, "");
+  const trimmed = value.trim();
+  const negative =
+    /^\s*-/.test(trimmed) ||
+    /^\s*R\$\s*-/i.test(trimmed) ||
+    /^\s*\(.*\)\s*$/.test(trimmed) ||
+    /\(\s*[^()]*\d[^()]*\)\s*$/.test(trimmed);
+
+  // Remove rótulos de lote e apoia separadores de milhar escritos com espaço.
+  const source = trimmed
+    .replace(/\bLOTE\s*\d+\s*:/gi, " ")
+    .replace(/(\d)\s+(?=\d)/g, "$1");
+
+  // Um único valor monetário por chamada; listas devem ser separadas antes.
+  const tokens = source.match(/-?\d[\d.,]*/g) ?? [];
+  if (tokens.length !== 1) return null;
+
+  let raw = tokens[0].replace(/[.,]+$/, "");
+  if (raw.startsWith("-")) raw = raw.slice(1);
+  if (!raw) return null;
+
+  const hasComma = raw.includes(",");
+  const hasDot = raw.includes(".");
+  let integerDigits: string | null = null;
+  let fractionDigits: string | null = null;
+
+  if (hasComma && hasDot) {
+    const decimalSeparator = raw.lastIndexOf(",") > raw.lastIndexOf(".") ? "," : ".";
+    const thousandsSeparator = decimalSeparator === "," ? "." : ",";
+    const decimalIndex = raw.lastIndexOf(decimalSeparator);
+    const integerPart = raw.slice(0, decimalIndex);
+    const fractionPart = raw.slice(decimalIndex + 1);
+    if (!integerPart || !/^\d+$/.test(fractionPart)) return null;
+    integerDigits = normalizeIntegerDigits(integerPart, thousandsSeparator);
+    fractionDigits = fractionPart;
+  } else if (hasComma || hasDot) {
+    const separator = hasComma ? "," : ".";
+    const parts = raw.split(separator);
+    if (parts.length > 2) {
+      const lastPart = parts[parts.length - 1];
+      const hasDecimalTail = lastPart.length === 1 || lastPart.length === 2;
+      if (hasDecimalTail) {
+        // Aceita também valores como "205.314.52", em que o último ponto é decimal.
+        const integerPart = parts.slice(0, -1).join(separator);
+        integerDigits = normalizeIntegerDigits(integerPart, separator);
+        fractionDigits = lastPart;
+      } else {
+        integerDigits = normalizeIntegerDigits(raw, separator);
+      }
+    } else {
+      const [integerPart, fractionPart] = parts;
+      if (!integerPart || !/^\d+$/.test(fractionPart)) return null;
+      const looksLikeThousands =
+        fractionPart.length === 3 && integerPart.length <= 3 && integerPart !== "0";
+      if (looksLikeThousands) {
+        integerDigits = normalizeIntegerDigits(raw, separator);
+      } else {
+        integerDigits = normalizeIntegerDigits(integerPart, null);
+        fractionDigits = fractionPart;
+      }
+    }
+  } else {
+    integerDigits = normalizeIntegerDigits(raw, null);
+  }
+
+  if (!integerDigits) return null;
+  const normalized = fractionDigits ? `${integerDigits}.${fractionDigits}` : integerDigits;
   const parsed = Number(normalized);
-  return Number.isFinite(parsed) ? parsed : null;
+  if (!Number.isFinite(parsed)) return null;
+  if (parsed === 0) return 0;
+  return negative ? -parsed : parsed;
 }
 
 export function isReportRecord(record: AuctionRecord, filters: ReportFilters): boolean {

@@ -32,6 +32,73 @@ describe("regras do relatório de vencedores", () => {
     expect(parseCurrency("")).toBeNull();
   });
 
+  it("interpreta valores com uma casa decimal sem multiplicá-los por dez", () => {
+    const cases = [
+      ["1234.5", 1234.5],
+      ["0.5", 0.5],
+      ["2408788.2", 2408788.2],
+      ["65565844.3", 65565844.3],
+      ["546523.9", 546523.9],
+      ["1234,5", 1234.5],
+      ["0,5", 0.5],
+    ] as const;
+
+    for (const [input, expected] of cases) {
+      expect(parseCurrency(input), input).toBe(expected);
+    }
+  });
+
+  it("interpreta separadores decimais e de milhar brasileiros e internacionais", () => {
+    const cases = [
+      ["R$ 1.234,56", 1234.56],
+      ["1.234.567,89", 1234567.89],
+      ["1.234", 1234],
+      ["1.234.567", 1234567],
+      ["1234,56", 1234.56],
+      ["1.234,5", 1234.5],
+      ["1,234.56", 1234.56],
+      ["1,234.5", 1234.5],
+      ["1,234,567.89", 1234567.89],
+      ["1,234", 1234],
+      ["1,234,567", 1234567],
+      ["1234.56", 1234.56],
+      ["10.000", 10000],
+      ["10,000", 10000],
+      ["0.05", 0.05],
+      ["0,05", 0.05],
+      ["0.500", 0.5],
+      ["0,500", 0.5],
+      ["1.234.56", 1234.56],
+      ["1,234,56", 1234.56],
+      ["R$ 205.314.52", 205314.52],
+      ["R$ 4.681.202.52", 4681202.52],
+      ["R$ 151.101.73", 151101.73],
+      ["R$ 2.405.870.4", 2405870.4],
+      ["R$ 1 234,56", 1234.56],
+      ["-1.234,56", -1234.56],
+      ["- 1.234,56", -1234.56],
+      ["-1,234.56", -1234.56],
+      ["(1.234,56)", -1234.56],
+      ["R$ (1.234,56)", -1234.56],
+    ] as const;
+
+    for (const [input, expected] of cases) {
+      expect(parseCurrency(input), input).toBe(expected);
+    }
+  });
+
+  it("rejeita múltiplos valores e agrupamentos inválidos", () => {
+    expect(parseCurrency("R$ 1.000,00 // R$ 2.000,00")).toBeNull();
+    expect(parseCurrency("1.234,56 - 2.000,00")).toBeNull();
+    expect(parseCurrency("1.23.456")).toBeNull();
+    expect(parseCurrency("1,23,456")).toBeNull();
+    expect(parseCurrency("1.234.56.78")).toBeNull();
+    expect(parseCurrency("SIGILOSO")).toBeNull();
+    expect(parseCurrency("MENOR VALOR MENSAL")).toBeNull();
+    expect(parseCurrency("abc")).toBeNull();
+    expect(parseCurrency("R$")).toBeNull();
+  });
+
   it("filtra os resultados finais, agrupa empresas e calcula os indicadores", () => {
     const report = buildReport(records, filters);
 
