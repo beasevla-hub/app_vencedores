@@ -2,7 +2,11 @@ import { describe, expect, it } from "vitest";
 
 const NOTION_API_VERSION = "2026-03-11";
 
-describe("integração com o Notion", () => {
+// A suíte é executada explicitamente com `pnpm test:integration`.
+// Sem credencial configurada, os testes são ignorados em vez de falharem por ambiente.
+const describeIntegration = process.env.NOTION_API_KEY ? describe : describe.skip;
+
+describeIntegration("integração com o Notion", () => {
   it("autentica a integração configurada", async () => {
     const token = process.env.NOTION_API_KEY;
     expect(token, "NOTION_API_KEY deve estar configurada no ambiente do servidor").toBeTruthy();

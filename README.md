@@ -11,7 +11,7 @@ Este projeto gera análises consolidadas da base **Captação Geral** do Notion.
 | Regras financeiras | Soma dos valores publicados e aceitos, saldo/economia, maior contrato e empresa com maior valor consolidado. |
 | Detalhamento | Agrupamento decrescente por `Emp. em Análise`, com editais, processos, objetos e desconto percentual. |
 | PDF | Cabeçalho, período, indicadores, tabela por empresa, rodapé de totais, logotipo e marca d’água da THI. |
-| Qualidade | Testes Vitest para credencial, consulta real ao Notion, normalização de valores, filtros, cálculos e agrupamento. |
+| Qualidade | Testes Vitest unitários para normalização de valores, filtros, cálculos e agrupamento; integração real com o Notion em suíte separada e opcional. |
 
 ## Configuração local
 
@@ -69,13 +69,15 @@ pnpm install
 pnpm dev
 ```
 
-Os comandos abaixo validam tipos, integração e compilação de produção:
+Os comandos abaixo validam tipos, testes unitários e compilação de produção:
 
 ```bash
 pnpm check
 pnpm test
 pnpm build
 ```
+
+O comando `pnpm test` executa somente testes unitários e não acessa serviços externos. Para validar a conexão e a leitura reais do Notion, use `pnpm test:integration`; essa suíte carrega o `.env` e é ignorada automaticamente quando `NOTION_API_KEY` não estiver configurada. Para executar as duas suítes em sequência, use `pnpm test:all`.
 
 ## Regras de cálculo
 

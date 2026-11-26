@@ -15,5 +15,7 @@ export default defineConfig({
   test: {
     environment: "node",
     include: ["server/**/*.test.ts", "server/**/*.spec.ts"],
+    // Testes com integração real ficam em uma suíte separada e explícita.
+    exclude: ["server/**/*.integration.test.ts"],
   },
 });
