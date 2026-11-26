@@ -3,6 +3,23 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@theme {
+  --font-sans: "Inter", "Segoe UI", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --color-brand-50: #f2f7f1;
+  --color-brand-100: #e4efe2;
+  --color-brand-200: #c9dfc6;
+  --color-brand-300: #a5caa1;
+  --color-brand-400: #7aaf76;
+  --color-brand-500: #4f8e52;
+  --color-brand-600: #2f7a45;
+  --color-brand-700: #1f6137;
+  --color-brand-800: #174c2b;
+  --color-brand-900: #123a22;
+  --color-canvas: #f4f6f2;
+  --color-ink: #16231b;
+  --color-line: #dde5da;
+}
+
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -43,39 +60,39 @@
 }
 
 :root {
-  --primary: var(--color-blue-700);
-  --primary-foreground: var(--color-blue-50);
-  --sidebar-primary: var(--color-blue-600);
-  --sidebar-primary-foreground: var(--color-blue-50);
-  --chart-1: var(--color-blue-300);
-  --chart-2: var(--color-blue-500);
-  --chart-3: var(--color-blue-600);
-  --chart-4: var(--color-blue-700);
-  --chart-5: var(--color-blue-800);
-  --radius: 0.65rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.235 0.015 65);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.235 0.015 65);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.235 0.015 65);
-  --secondary: oklch(0.98 0.001 286.375);
-  --secondary-foreground: oklch(0.4 0.015 65);
-  --muted: oklch(0.967 0.001 286.375);
-  --muted-foreground: oklch(0.552 0.016 285.938);
-  --accent: oklch(0.967 0.001 286.375);
-  --accent-foreground: oklch(0.141 0.005 285.823);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.985 0 0);
-  --border: oklch(0.92 0.004 286.32);
-  --input: oklch(0.92 0.004 286.32);
-  --ring: oklch(0.623 0.214 259.815);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.235 0.015 65);
-  --sidebar-accent: oklch(0.967 0.001 286.375);
-  --sidebar-accent-foreground: oklch(0.141 0.005 285.823);
-  --sidebar-border: oklch(0.92 0.004 286.32);
-  --sidebar-ring: oklch(0.623 0.214 259.815);
+  --primary: #1f6137;
+  --primary-foreground: #f7fbf5;
+  --sidebar-primary: #2f7a45;
+  --sidebar-primary-foreground: #f7fbf5;
+  --chart-1: #a5caa1;
+  --chart-2: #4f8e52;
+  --chart-3: #2f7a45;
+  --chart-4: #174c2b;
+  --chart-5: #123a22;
+  --radius: 0.75rem;
+  --background: #f4f6f2;
+  --foreground: #16231b;
+  --card: #ffffff;
+  --card-foreground: #16231b;
+  --popover: #ffffff;
+  --popover-foreground: #16231b;
+  --secondary: #f1f5ef;
+  --secondary-foreground: #1f3a27;
+  --muted: #f3f5f1;
+  --muted-foreground: #66736a;
+  --accent: #eaf2e7;
+  --accent-foreground: #173c25;
+  --destructive: #b42318;
+  --destructive-foreground: #ffffff;
+  --border: #dde5da;
+  --input: #dde5da;
+  --ring: #4f8e52;
+  --sidebar: #f8faf7;
+  --sidebar-foreground: #16231b;
+  --sidebar-accent: #eaf2e7;
+  --sidebar-accent-foreground: #173c25;
+  --sidebar-border: #dde5da;
+  --sidebar-ring: #4f8e52;
 }
 
 .dark {
@@ -117,8 +134,19 @@
   * {
     @apply border-border outline-ring/50;
   }
+  html {
+    color-scheme: light;
+    scroll-behavior: smooth;
+  }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-canvas text-ink antialiased;
+    font-family: var(--font-sans);
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    min-width: 320px;
+  }
+  ::selection {
+    background: #c9dfc6;
+    color: #123a22;
   }
   button:not(:disabled),
   [role="button"]:not([aria-disabled="true"]),

@@ -11,7 +11,7 @@ Este projeto gera análises consolidadas da base **Captação Geral** do Notion.
 | Regras financeiras | Soma dos valores publicados e aceitos, saldo/economia, maior contrato e empresa com maior valor consolidado. |
 | Detalhamento | Agrupamento decrescente por `Emp. em Análise`, com editais, processos, objetos e desconto percentual. |
 | PDF | Cabeçalho, período, indicadores, tabela por empresa, rodapé de totais, logotipo e marca d’água da THI. |
-| Qualidade | Testes Vitest unitários para normalização de valores, filtros, cálculos e agrupamento; integração real com o Notion em suíte separada e opcional. |
+| Qualidade | Testes Vitest unitários para normalização de valores, filtros, cálculos, agrupamento e geração de PDF; integração real com o Notion em suíte separada e opcional. |
 
 ## Configuração local
 
@@ -32,20 +32,11 @@ LOCAL_DEV_BYPASS_AUTH=true
 
 O `LOCAL_DEV_BYPASS_AUTH=true` libera apenas o painel rodando localmente com `NODE_ENV=development`; ele não cria um bypass para ambiente de produção. Remova essa variável caso queira integrar uma autenticação própria.
 
-Para a execução local, não configure `OAUTH_SERVER_URL`, `VITE_ANALYTICS_ENDPOINT`, `VITE_ANALYTICS_WEBSITE_ID` nem variáveis `BUILT_IN_FORGE_*`. O projeto ignora esses serviços hospedados no modo local e usa um logotipo de fallback para permitir a geração de PDF.
+Para a execução local, não configure `OAUTH_SERVER_URL`, `VITE_ANALYTICS_ENDPOINT`, `VITE_ANALYTICS_WEBSITE_ID` nem variáveis `BUILT_IN_FORGE_*`. O projeto ignora esses serviços hospedados no modo local.
 
-### Logotipo oficial no modo local
+### Logotipo oficial
 
-Para que o painel e o PDF local usem exatamente o PNG oficial da THI, copie o arquivo enviado como `logo.png` para a raiz do projeto, no mesmo nível de `package.json`:
-
-```text
-app_vencedores/
-├── logo.png
-├── package.json
-└── .env
-```
-
-O arquivo é servido apenas durante o desenvolvimento local e não deve ser versionado. Quando `logo.png` não estiver presente, o projeto usa automaticamente uma versão de fallback para manter a exportação de PDF funcional.
+O PNG oficial da THI fica versionado em `client/public/thi-logo.png` e é servido em `/thi-logo.png` tanto pelo Vite quanto pelo build de produção. O painel e o PDF usam o mesmo arquivo; se ele não estiver disponível, o PDF usa uma marca vetorial de fallback e continua sendo exportado.
 
 No Notion, crie ou escolha uma integração interna em `notion.so/my-integrations` com permissão de leitura de conteúdo. Depois, abra a base **Captação Geral**, escolha **Compartilhar** e adicione essa integração. O app consulta a fonte de dados `Captação Geral` vinculada à base já configurada no código.
 
@@ -77,14 +68,14 @@ pnpm test
 pnpm build
 ```
 
-O comando `pnpm test` executa somente testes unitários e não acessa serviços externos. Para validar a conexão e a leitura reais do Notion, use `pnpm test:integration`; essa suíte carrega o `.env` e é ignorada automaticamente quando `NOTION_API_KEY` não estiver configurada. Para executar as duas suítes em sequência, use `pnpm test:all`.
+O comando `pnpm test` executa somente testes unitários, incluindo os cenários de paginação e dados extremos do PDF, e não acessa serviços externos. Para validar a conexão e a leitura reais do Notion, use `pnpm test:integration`; essa suíte carrega o `.env` e é ignorada automaticamente quando `NOTION_API_KEY` não estiver configurada. Para executar as duas suítes em sequência, use `pnpm test:all`.
 
 ## Regras de cálculo
 
 | Indicador | Regra |
 |---|---|
 | Total de empresas | Quantidade de nomes únicos em `Emp. em Análise`. |
-| Total de licitações | Quantidade de registros filtrados. |
+| Total de licitações | Quantidade de licitações distintas; lotes da mesma licitação contam uma vez. |
 | Valor publicado | Soma de `VALOR DA OBRA`. |
 | Valor contratado | Soma de `Valor aceito`. |
 | Saldo/economia | `Valor publicado − Valor contratado`. |
@@ -92,6 +83,6 @@ O comando `pnpm test` executa somente testes unitários e não acessa serviços 
 | Maior contrato | Maior `Valor aceito` individual. |
 | Desconto | `(Valor da obra − Valor aceito) ÷ Valor da obra`. |
 
-## Observação sobre validação hospedada
+## Validação visual e de PDF
 
->A validação visual autenticada na prévia hospedada não foi concluída porque o acesso do usuário foi bloqueado por uma falha de autenticação do Cloudflare. A aplicação, os testes e a compilação foram verificados no ambiente de desenvolvimento; a validação visual final do PDF deve ser feita localmente seguindo os passos acima.
+A interface foi validada localmente em larguras de desktop e mobile, incluindo busca de órgãos, geração de relatório, estado sem resultados, aviso de filtros desatualizados e bloqueio do PDF nesse estado. A geração de PDF foi conferida com dados reais da base e com um conjunto sintético de 108 registros, 18 empresas, múltiplos lotes, descrições longas, acentuação e tabelas que continuam em páginas seguintes.
